@@ -213,8 +213,12 @@ function renderMatch(){
     const a=actual(m);
     const played=a.ah!==null;
     const ov=overrides[m.no]&&overrides[m.no].ah!==null&&overrides[m.no].ah!==undefined;
+    const isLive=!ov && shared[m.no] && shared[m.no].live===true;
     const scoreHtml=played
-      ? `<div class="score ${ov?'live':''}">${a.ah} : ${a.aa}</div>`
+      ? `<div style="display:flex;align-items:center;gap:8px">
+           ${isLive?'<span style="background:#ff3b3b;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;animation:none">● ÉLŐ</span>':''}
+           <div class="score ${isLive?'live':(ov?'live':'')}">${a.ah} : ${a.aa}</div>
+         </div>`
       : `<div class="score pend">– : –</div>`;
     // tippek
     let tips="";
@@ -272,7 +276,10 @@ async function loadShared(showStatus){
       when=" · utolsó frissítés: "+d.toLocaleString("hu-HU",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
     }
     renderAll();
-    st.textContent=`✅ ${cnt} mérkőzés eredménye betöltve${when}.`;
+    const liveCnt=Object.values(shared).filter(v=>v&&v.live===true).length;
+    st.innerHTML = liveCnt>0
+      ? `<span style="color:#ff6b6b;font-weight:700">🔴 ${liveCnt} élő meccs folyamatban</span> – a pontok még változhatnak${when}.`
+      : `✅ ${cnt} mérkőzés eredménye betöltve${when}.`;
   }catch(e){
     renderAll();
     st.textContent="ℹ️ A közös eredményfájl helyben nem érhető el. A beépített eredmények láthatók; éles (Netlify) oldalon automatikusan frissül.";

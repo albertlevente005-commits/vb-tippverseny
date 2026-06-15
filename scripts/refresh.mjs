@@ -29,8 +29,10 @@ if (!r.ok) {
   process.exit(0);
 }
 const data = await r.json();
+// Befejezett ÉS élő (folyamatban lévő / félidős) meccsek is
+const LIVE = ["IN_PLAY", "PAUSED", "SUSPENDED"];
 const api = (data.matches || []).filter(
-  (m) => m.status === "FINISHED" && m.score?.fullTime?.home != null
+  (m) => (m.status === "FINISHED" || LIVE.includes(m.status)) && m.score?.fullTime?.home != null
 );
 
 let updated = 0;
@@ -46,9 +48,10 @@ for (const m of D.matches) {
   if (hit) {
     const ah = hit.score.fullTime.home;
     const aa = hit.score.fullTime.away;
+    const live = hit.status !== "FINISHED";
     const cur = results[m.no];
-    if (!cur || cur.ah !== ah || cur.aa !== aa) updated++;
-    results[m.no] = { ah, aa };
+    if (!cur || cur.ah !== ah || cur.aa !== aa || !!cur.live !== live) updated++;
+    results[m.no] = live ? { ah, aa, live: true } : { ah, aa };
   }
 }
 
