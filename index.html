@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VB 2026 Tippverseny</title>
+<style>
+  :root{
+    --bg:#0e1525; --bg2:#16203a; --card:#1b2742; --line:#2a3a5e;
+    --txt:#eaf0ff; --muted:#92a3c7; --acc:#3ad29f; --acc2:#ffd34e;
+    --gold:#ffd34e; --silver:#c8d3e8; --bronze:#e0975a; --red:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:linear-gradient(160deg,#0e1525,#0b1020);color:var(--txt);min-height:100vh}
+  header{padding:22px 18px 10px;text-align:center}
+  h1{margin:0;font-size:25px;letter-spacing:.5px}
+  h1 span{color:var(--acc)}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 14px 60px}
+  .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+  .tab{background:var(--card);border:1px solid var(--line);color:var(--muted);
+    padding:9px 16px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
+  .tab.active{background:var(--acc);color:#06231a;border-color:var(--acc)}
+  .sync{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:6px 0 14px}
+  .btn{background:var(--acc2);color:#2a2000;border:none;padding:9px 16px;border-radius:8px;
+    font-weight:700;cursor:pointer;font-size:14px}
+  .btn.sec{background:var(--card);color:var(--txt);border:1px solid var(--line)}
+  .status{font-size:12px;color:var(--muted);min-height:16px;text-align:center}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:10px 0;overflow:hidden}
+  /* Ranglista */
+  .rank-row{display:grid;grid-template-columns:46px 1fr auto;align-items:center;
+    padding:12px 16px;border-bottom:1px solid var(--line)}
+  .rank-row:last-child{border-bottom:none}
+  .pos{font-size:18px;font-weight:800;text-align:center}
+  .pos.p1{color:var(--gold)} .pos.p2{color:var(--silver)} .pos.p3{color:var(--bronze)}
+  .pname{font-weight:600}
+  .pmeta{font-size:11px;color:var(--muted);margin-top:2px}
+  .pts{font-size:20px;font-weight:800;color:var(--acc)}
+  .pts small{font-size:11px;color:var(--muted);font-weight:600}
+  .bar-bg{height:5px;background:var(--bg2);border-radius:3px;margin-top:6px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+  /* Meccsek */
+  .gsel{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0 12px}
+  .gchip{background:var(--card);border:1px solid var(--line);color:var(--muted);
+    padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+  .gchip.active{background:var(--acc);color:#06231a}
+  .match{padding:12px 16px;border-bottom:1px solid var(--line)}
+  .match:last-child{border-bottom:none}
+  .mtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .mteams{font-weight:700;font-size:15px}
+  .mdate{font-size:11px;color:var(--muted)}
+  .score{font-weight:800;font-size:17px;background:var(--bg2);padding:3px 12px;border-radius:8px;white-space:nowrap}
+  .score.live{color:var(--acc2)}
+  .score.pend{color:var(--muted);font-weight:600}
+  .edit{margin-top:8px;font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .edit input{width:42px;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+    border-radius:6px;padding:5px;text-align:center;font-size:14px}
+  .edit button{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px 10px;cursor:pointer}
+  .tipgrid{margin-top:10px;display:none}
+  .tipgrid.open{display:block}
+  .tip{display:grid;grid-template-columns:1fr 54px 44px;gap:6px;padding:5px 0;font-size:13px;border-top:1px dashed var(--line)}
+  .tip .tname{color:var(--muted)}
+  .tip .tval{text-align:center;font-variant-numeric:tabular-nums}
+  .tip .tp{text-align:right;font-weight:700;color:var(--acc)}
+  .tip .tp.z{color:var(--muted);font-weight:500}
+  .toggle{font-size:11px;color:var(--acc2);cursor:pointer;margin-top:7px;display:inline-block}
+  /* Súgó */
+  .help{padding:16px 18px;font-size:14px;line-height:1.6}
+  .help h3{margin:14px 0 6px;font-size:15px;color:var(--acc)}
+  .help table{width:100%;border-collapse:collapse;margin:6px 0}
+  .help td{padding:6px 8px;border-bottom:1px solid var(--line)}
+  .help td:last-child{text-align:right;font-weight:700;color:var(--acc2)}
+  .foot{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;line-height:1.6}
+</style>
+</head>
+<body>
+<header>
+  <h1>VB <span>2026</span> Tippverseny</h1>
+  <div class="sub">Élő eredménykövetés &amp; automatikus pontszámítás</div>
+</header>
+
+<div class="wrap">
+  <div class="bar">
+    <div class="tab active" data-tab="rank">🏆 Ranglista</div>
+    <div class="tab" data-tab="match">⚽ Meccsek</div>
+    <div class="tab" data-tab="help">ℹ️ Pontozás</div>
+  </div>
+
+  <div class="sync">
+    <button class="btn" id="syncBtn">🔄 Eredmények frissítése</button>
+    <button class="btn sec" id="resetBtn">Saját módosítások törlése</button>
+  </div>
+  <div class="status" id="status"></div>
+
+  <div id="tab-rank"></div>
+  <div id="tab-match" style="display:none"></div>
+  <div id="tab-help" style="display:none">
+    <div class="card help">
+      <h3>Hogyan számolódnak a pontok?</h3>
+      A pontok <b>összeadódnak</b> – minden teljesülő feltétel pontja hozzáadódik a meccs pontszámához
+      (ez a táblázat „Részpontszámok összeadása” módja).
+      <table>
+        <tr><td><b>Telitalálat</b> – a pontos eredmény eltalálása</td><td>10 p</td></tr>
+        <tr><td><b>Gólkülönbség</b> eltalálása</td><td>6 p</td></tr>
+        <tr><td><b>Mérkőzés kimenetele</b> (győztes / döntetlen)</td><td>4 p</td></tr>
+        <tr><td><b>Egyik csapat góljainak</b> eltalálása</td><td>3 p</td></tr>
+        <tr><td><b>Összes gól</b> számának eltalálása</td><td>2 p</td></tr>
+        <tr><td><b>Fordított gólkülönbség</b> eltalálása</td><td>1 p</td></tr>
+      </table>
+      <div style="color:var(--muted);font-size:12.5px">
+        Példa: pontos találat döntetlennél = 10+6+4+3+2 = <b>25 pont</b>.
+        Pontos találat győzelemnél = 10+6+4+3+2 = <b>25 pont</b>
+        (a fordított gólkülönbség döntetlennél nem jár).
+      </div>
+      <h3>Automatikus frissítés</h3>
+      Az „Eredmények frissítése” gomb élő foci-adatbázisból (football-data.org) húzza le a VB 2026
+      meccsek végeredményét, és csapatnév + dátum alapján párosítja a táblázat meccseihez.
+      Kézzel is beírhatsz / felülírhatsz bármilyen eredményt a meccs alatti mezőkben –
+      a pontszámok azonnal újraszámolódnak.
+    </div>
+  </div>
+
+  <div class="foot">
+    72 csoportmérkőzés · 11 játékos · pontszámítás az eredeti táblázat alapján<br>
+    Az eredmények és módosítások a böngésződben mentődnek.
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = window.VB_DATA;
+const LS_KEY = "vb2026_results_v1";
+// felhasználói felülírt eredmények: { matchNo: {ah,aa} }
+let overrides = {};
+try { overrides = JSON.parse(localStorage.getItem(LS_KEY) || "{}"); } catch(e){}
+// közös, automatikusan frissülő eredmények (results.json a háttér-frissítésből)
+let shared = {};
+
+function saveOverrides(){ localStorage.setItem(LS_KEY, JSON.stringify(overrides)); }
+
+// tényleges eredmény: kézi override > közös (auto) > beépített seed
+function actual(m){
+  if (overrides[m.no] && overrides[m.no].ah !== null && overrides[m.no].ah !== undefined)
+    return {ah:overrides[m.no].ah, aa:overrides[m.no].aa};
+  if (shared[m.no] && shared[m.no].ah !== null && shared[m.no].ah !== undefined)
+    return {ah:shared[m.no].ah, aa:shared[m.no].aa};
+  if (m.ah !== null && m.ah !== undefined) return {ah:m.ah, aa:m.aa};
+  return {ah:null, aa:null};
+}
+const sg = x => (x>0)-(x<0);
+// PONTSZÁMÍTÁS – azonos az Excellel (additív)
+function score(th,ta,ah,aa){
+  if ([th,ta,ah,aa].some(v=>v===null||v===undefined||v==="")) return null;
+  th=+th; ta=+ta; ah=+ah; aa=+aa;
+  let p=0;
+  if (th===ah && ta===aa) p+=10;            // telitalálat
+  if ((th-ta)===(ah-aa)) p+=6;              // gólkülönbség
+  if (sg(th-ta)===sg(ah-aa)) p+=4;          // kimenetel
+  if (th===ah || ta===aa) p+=3;             // egyik csapat gólja
+  if ((th+ta)===(ah+aa)) p+=2;              // összes gól
+  if ((th-ta)===-(ah-aa) && (ah-aa)!==0) p+=1; // fordított gólkülönbség
+  return p;
+}
+
+function totals(){
+  const t={}; D.players.forEach(p=>t[p]={pts:0,hits:0,played:0});
+  D.matches.forEach(m=>{
+    const a=actual(m);
+    if (a.ah===null) return;
+    D.players.forEach(p=>{
+      const tip=m.tips[p];
+      if (!tip || tip.h===null) return;
+      const s=score(tip.h,tip.a,a.ah,a.aa);
+      t[p].pts+=s; t[p].played++;
+      if (s>=25) t[p].hits++;
+    });
+  });
+  return t;
+}
+
+/* ---------- RANGLISTA ---------- */
+function renderRank(){
+  const t=totals();
+  const arr=D.players.map(p=>({name:p,...t[p]})).sort((a,b)=>b.pts-a.pts||b.hits-a.hits);
+  const max=Math.max(1,...arr.map(a=>a.pts));
+  let pos=0,prev=null,shown=0;
+  const rows=arr.map((a)=>{
+    shown++; if(a.pts!==prev){pos=shown;prev=a.pts;}
+    const cls=pos<=3?`p${pos}`:"";
+    const medal=pos===1?"🥇":pos===2?"🥈":pos===3?"🥉":"";
+    return `<div class="rank-row">
+      <div class="pos ${cls}">${medal||pos}</div>
+      <div>
+        <div class="pname">${a.name}</div>
+        <div class="pmeta">${a.played} meccs · ${a.hits} telitalálat</div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${a.pts/max*100}%"></div></div>
+      </div>
+      <div class="pts">${a.pts}<small> pont</small></div>
+    </div>`;
+  }).join("");
+  document.getElementById("tab-rank").innerHTML=`<div class="card">${rows}</div>`;
+}
+
+/* ---------- MECCSEK ---------- */
+let curGroup="A";
+function groups(){ return [...new Set(D.matches.map(m=>m.group))].sort(); }
+function renderMatch(){
+  const gs=groups();
+  const chips=gs.map(g=>`<div class="gchip ${g===curGroup?'active':''}" data-g="${g}">${g} csoport</div>`).join("");
+  const ms=D.matches.filter(m=>m.group===curGroup).sort((a,b)=>a.no-b.no);
+  const cards=ms.map(m=>{
+    const a=actual(m);
+    const played=a.ah!==null;
+    const ov=overrides[m.no]&&overrides[m.no].ah!==null&&overrides[m.no].ah!==undefined;
+    const scoreHtml=played
+      ? `<div class="score ${ov?'live':''}">${a.ah} : ${a.aa}</div>`
+      : `<div class="score pend">– : –</div>`;
+    // tippek
+    let tips="";
+    D.players.forEach(p=>{
+      const tip=m.tips[p];
+      if(!tip||tip.h===null) return;
+      const s=played?score(tip.h,tip.a,a.ah,a.aa):null;
+      tips+=`<div class="tip"><span class="tname">${p}</span>
+        <span class="tval">${tip.h} : ${tip.a}</span>
+        <span class="tp ${s?'':'z'}">${s===null?'–':s+'p'}</span></div>`;
+    });
+    return `<div class="match">
+      <div class="mtop">
+        <div><div class="mteams">${m.home} – ${m.away}</div>
+        <div class="mdate">${m.no}. meccs · ${m.iso||''} ${m.time||''}</div></div>
+        ${scoreHtml}
+      </div>
+      <div class="edit">
+        Eredmény:
+        <input type="number" min="0" id="h${m.no}" value="${a.ah!==null?a.ah:''}" placeholder="-">
+        :
+        <input type="number" min="0" id="a${m.no}" value="${a.aa!==null?a.aa:''}" placeholder="-">
+        <button onclick="setRes(${m.no})">Mentés</button>
+        ${ov?`<button onclick="clrRes(${m.no})">Vissza</button>`:''}
+      </div>
+      <span class="toggle" onclick="this.nextElementSibling.classList.toggle('open')">▾ Tippek &amp; pontok</span>
+      <div class="tipgrid">${tips||'<div class="pmeta">Nincs tipp.</div>'}</div>
+    </div>`;
+  }).join("");
+  document.getElementById("tab-match").innerHTML=
+    `<div class="gsel">${chips}</div><div class="card">${cards}</div>`;
+  document.querySelectorAll(".gchip").forEach(c=>c.onclick=()=>{curGroup=c.dataset.g;renderMatch();});
+}
+function setRes(no){
+  const h=document.getElementById("h"+no).value, a=document.getElementById("a"+no).value;
+  if(h===""||a===""){alert("Add meg mindkét gólszámot!");return;}
+  overrides[no]={ah:+h,aa:+a}; saveOverrides(); renderAll();
+}
+function clrRes(no){ delete overrides[no]; saveOverrides(); renderAll(); }
+
+/* ---------- KÖZÖS EREDMÉNYEK BETÖLTÉSE (results.json) ---------- */
+// A háttér-frissítő (GitHub Action) tölti fel a results.json-t élő adatokkal.
+async function loadShared(showStatus){
+  const st=document.getElementById("status");
+  if(showStatus) st.textContent="Frissítés…";
+  try{
+    const r=await fetch("results.json?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok) throw new Error("no file");
+    const data=await r.json();
+    shared=data.results||{};
+    const cnt=Object.keys(shared).length;
+    let when="";
+    if(data.updated){
+      const d=new Date(data.updated);
+      when=" · utolsó frissítés: "+d.toLocaleString("hu-HU",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+    }
+    renderAll();
+    st.textContent=`✅ ${cnt} mérkőzés eredménye betöltve${when}.`;
+  }catch(e){
+    renderAll();
+    st.textContent="ℹ️ A közös eredményfájl helyben nem érhető el. A beépített eredmények láthatók; éles (Netlify) oldalon automatikusan frissül.";
+  }
+}
+function sync(){ loadShared(true); }
+
+/* ---------- KÖZÖS ---------- */
+function renderAll(){ renderRank(); renderMatch(); }
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");
+  ["rank","match","help"].forEach(n=>document.getElementById("tab-"+n).style.display=n===t.dataset.tab?"block":"none");
+});
+document.getElementById("syncBtn").onclick=sync;
+document.getElementById("resetBtn").onclick=()=>{
+  if(confirm("Törlöd a saját beírt/szinkronizált eredményeket? A táblázatba eredetileg beépített 12 eredmény megmarad.")){
+    overrides={}; saveOverrides(); renderAll();
+    document.getElementById("status").textContent="Saját módosítások törölve.";
+  }
+};
+renderAll();
+loadShared(false);
+// nyitva lévő oldal magától frissül 5 percenként (a háttér-frissítés tölti a fájlt)
+setInterval(()=>loadShared(false), 5*60*1000);
+</script>
+</body>
+</html>
