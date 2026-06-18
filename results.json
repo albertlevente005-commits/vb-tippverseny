@@ -1,6 +1,6 @@
 {
-  "updated": "2026-06-18T18:30:47.756Z",
-  "source": "football-data.org",
+  "updated": "2026-06-18T18:52:45.556Z",
+  "source": "football-data.org + kézi (21. meccs)",
   "results": {
     "1": {
       "ah": 2,
@@ -80,6 +80,10 @@
     },
     "20": {
       "ah": 3,
+      "aa": 1
+    },
+    "21": {
+      "ah": 1,
       "aa": 1
     },
     "22": {
