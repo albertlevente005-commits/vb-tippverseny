@@ -1,6 +1,6 @@
 {
-  "updated": "2026-06-19T22:30:47.608Z",
-  "source": "api-football",
+  "updated": "2026-06-19T22:32:28.031Z",
+  "source": "api-football + kézi (26,29)",
   "results": {
     "1": {
       "ah": 2,
@@ -116,8 +116,7 @@
     },
     "29": {
       "ah": 2,
-      "aa": 0,
-      "live": true
+      "aa": 0
     }
   }
 }
