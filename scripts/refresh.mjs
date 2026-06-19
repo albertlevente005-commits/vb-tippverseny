@@ -86,6 +86,9 @@ for (const m of D.matches) {
     matched++;
     const ah = hit.gh, aa = hit.ga, live = hit.live;
     const cur = results[m.no];
+    // Egy már LEZÁRT (nem élő) eredményt ne írjon felül egy élő API-állapot.
+    // Az API néha órákig "beragad" élőben egy már véget ért meccsnél – ezt kihagyjuk.
+    if (cur && cur.live !== true && live) { continue; }
     if (!cur || cur.ah !== ah || cur.aa !== aa || !!cur.live !== live) updated++;
     results[m.no] = live ? { ah, aa, live: true } : { ah, aa };
   } else {
