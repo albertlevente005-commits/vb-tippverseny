@@ -1,6 +1,6 @@
 {
-  "updated": "2026-06-19T03:53:07.283Z",
-  "source": "football-data.org",
+  "updated": "2026-06-19T03:58:00.545Z",
+  "source": "football-data.org + kézi (28. meccs)",
   "results": {
     "1": {
       "ah": 2,
@@ -104,6 +104,10 @@
     },
     "27": {
       "ah": 6,
+      "aa": 0
+    },
+    "28": {
+      "ah": 1,
       "aa": 0
     }
   }
