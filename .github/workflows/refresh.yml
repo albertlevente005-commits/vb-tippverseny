@@ -3,7 +3,7 @@ name: VB eredmények frissítése
 on:
   schedule:
     # 15 percenként fut (UTC). Élő meccs alatt is frissíti az aktuális állást.
-    # (API-Football ingyenes csomag: napi 100 kérés; 15 perc ~96/nap.)
+    # Forrás: football-data.org (ingyenes tier: 10 kérés/perc – bőven elég).
     - cron: "*/15 * * * *"
   workflow_dispatch: {}
 
@@ -22,7 +22,7 @@ jobs:
 
       - name: Eredmények lehúzása
         env:
-          API_FOOTBALL_TOKEN: ${{ secrets.API_FOOTBALL_TOKEN }}
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         run: node scripts/refresh.mjs
 
       - name: Változás commitolása
