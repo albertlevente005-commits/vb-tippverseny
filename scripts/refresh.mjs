@@ -1,5 +1,5 @@
-// Háttér-frissítő: API-Football (v3) élő + befejezett eredmények → results.json
-// Futtatja a GitHub Action (cron). Token: API_FOOTBALL_TOKEN környezeti változó.
+// Háttér-frissítő: football-data.org élő + befejezett eredmények → results.json
+// Futtatja a GitHub Action (cron). Token: FOOTBALL_DATA_TOKEN környezeti változó.
 // A meglévő (kézi/seed) eredmények megmaradnak, csak a megtalált meccseket írja felül.
 import fs from "node:fs";
 
@@ -8,9 +8,7 @@ globalThis.window = {};
 await import("../data.js");
 const D = globalThis.window.VB_DATA;
 
-const TOKEN = process.env.API_FOOTBALL_TOKEN;
-const LEAGUE = process.env.AF_LEAGUE || "1"; // 1 = World Cup
-const SEASON = process.env.AF_SEASON || "2026";
+const TOKEN = process.env.FOOTBALL_DATA_TOKEN;
 
 const norm = (s) =>
   (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
@@ -43,36 +41,32 @@ try { prev = JSON.parse(fs.readFileSync(new URL("../results.json", import.meta.u
 const results = { ...(prev.results || {}) };
 
 if (!TOKEN) {
-  console.error("Nincs API_FOOTBALL_TOKEN — csak a meglévő results.json marad.");
+  console.error("Nincs FOOTBALL_DATA_TOKEN — csak a meglévő results.json marad.");
   process.exit(0);
 }
 
-const r = await fetch(`https://v3.football.api-sports.io/fixtures?league=${LEAGUE}&season=${SEASON}`, {
-  headers: { "x-apisports-key": TOKEN },
+const r = await fetch("https://api.football-data.org/v4/competitions/WC/matches", {
+  headers: { "X-Auth-Token": TOKEN },
 });
 if (!r.ok) {
   console.error("API hiba:", r.status, await r.text());
   process.exit(0);
 }
 const data = await r.json();
-if (data.errors && (Array.isArray(data.errors) ? data.errors.length : Object.keys(data.errors).length)) {
-  console.error("API errors:", JSON.stringify(data.errors));
-}
-const fixtures = data.response || [];
-console.log(`Fixtures kapott (league=${LEAGUE}, season=${SEASON}): ${fixtures.length}`);
+const all = data.matches || [];
+console.log(`Meccsek az API-ból: ${all.length}`);
 
-const FINISHED = ["FT", "AET", "PEN"];
-const LIVE = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "SUSP", "INT"];
+const FINISHED = ["FINISHED", "AWARDED"];
+const LIVE = ["IN_PLAY", "PAUSED", "SUSPENDED"];
 
-const apiList = fixtures
-  .filter((f) => f?.goals && f.goals.home != null &&
-    (FINISHED.includes(f.fixture?.status?.short) || LIVE.includes(f.fixture?.status?.short)))
-  .map((f) => ({
-    h: norm(f.teams?.home?.name),
-    a: norm(f.teams?.away?.name),
-    gh: f.goals.home,
-    ga: f.goals.away,
-    live: !FINISHED.includes(f.fixture.status.short),
+const apiList = all
+  .filter((m) => (FINISHED.includes(m.status) || LIVE.includes(m.status)) && m.score?.fullTime?.home != null)
+  .map((m) => ({
+    h: norm(m.homeTeam?.name),
+    a: norm(m.awayTeam?.name),
+    gh: m.score.fullTime.home,
+    ga: m.score.fullTime.away,
+    live: LIVE.includes(m.status),
   }));
 
 let matched = 0, updated = 0;
@@ -100,7 +94,7 @@ if (unmatched.length) console.log("Nem párosított:", unmatched.join(" | "));
 
 const out = {
   updated: new Date().toISOString(),
-  source: "api-football",
+  source: "football-data.org",
   results,
 };
 fs.writeFileSync(new URL("../results.json", import.meta.url), JSON.stringify(out, null, 2));
