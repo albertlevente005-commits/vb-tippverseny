@@ -204,10 +204,10 @@ function renderRank(){
 
 /* ---------- MECCSEK ---------- */
 let curGroup="A";
-function groups(){ return [...new Set(D.matches.map(m=>m.group))].sort(); }
+function groups(){ return [...new Set(D.matches.map(m=>m.group))].sort((a,b)=>(a.length-b.length)||a.localeCompare(b)); }
 function renderMatch(){
   const gs=groups();
-  const chips=gs.map(g=>`<div class="gchip ${g===curGroup?'active':''}" data-g="${g}">${g} csoport</div>`).join("");
+  const chips=gs.map(g=>`<div class="gchip ${g===curGroup?'active':''}" data-g="${g}">${g.length===1?g+' csoport':g+' döntő'}</div>`).join("");
   const ms=D.matches.filter(m=>m.group===curGroup).sort((a,b)=>a.no-b.no);
   const cards=ms.map(m=>{
     const a=actual(m);
