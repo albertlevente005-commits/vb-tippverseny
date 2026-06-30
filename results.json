@@ -1,6 +1,6 @@
 {
-  "updated": "2026-06-30T07:30:42.331Z",
-  "source": "football-data.org",
+  "updated": "2026-06-30T07:37:13.817Z",
+  "source": "football-data.org + kézi (75,76 - 11-es)",
   "results": {
     "1": {
       "ah": 2,
@@ -299,12 +299,14 @@
       "aa": 1
     },
     "75": {
-      "ah": 4,
-      "aa": 5
+      "ah": 1,
+      "aa": 2,
+      "manual": true
     },
     "76": {
-      "ah": 0,
-      "aa": 1
+      "ah": 1,
+      "aa": 2,
+      "manual": true
     }
   }
 }
