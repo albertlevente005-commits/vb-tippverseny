@@ -78,6 +78,8 @@ for (const m of D.matches) {
   const hit = apiList.find((x) => nameMatch(x.h, enH) && nameMatch(x.a, enA));
   if (hit) {
     matched++;
+    // Kézzel ZÁROLT eredményt (manual:true) az API soha ne írjon felül (pl. 11-essel eldőlt meccs).
+    if (results[m.no] && results[m.no].manual === true) { continue; }
     const ah = hit.gh, aa = hit.ga, live = hit.live;
     const cur = results[m.no];
     // Egy már LEZÁRT (nem élő) eredményt ne írjon felül egy élő API-állapot.
