@@ -1,6 +1,6 @@
 {
-  "updated": "2026-07-03T23:30:51.139Z",
-  "source": "football-data.org",
+  "updated": "2026-07-03T23:40:59.000Z",
+  "source": "football-data.org + kézi javítás (86: Ausztrália-Egyiptom 1-2)",
   "results": {
     "1": {
       "ah": 2,
@@ -345,8 +345,9 @@
       "aa": 0
     },
     "86": {
-      "ah": 3,
-      "aa": 5
+      "ah": 1,
+      "aa": 2,
+      "manual": true
     },
     "87": {
       "ah": 1,
