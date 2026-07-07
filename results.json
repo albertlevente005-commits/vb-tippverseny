@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-07T21:31:03.927Z",
+  "updated": "2026-07-07T22:01:08.268Z",
   "source": "football-data.org",
   "results": {
     "1": {
@@ -389,8 +389,7 @@
     },
     "96": {
       "ah": 0,
-      "aa": 0,
-      "live": true
+      "aa": 0
     }
   }
 }
