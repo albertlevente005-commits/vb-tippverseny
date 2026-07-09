@@ -1,6 +1,6 @@
 {
-  "updated": "2026-07-09T16:30:59.155Z",
-  "source": "football-data.org",
+  "updated": "2026-07-09T16:38:50.133Z",
+  "source": "football-data.org + kézi",
   "results": {
     "1": {
       "ah": 2,
@@ -393,8 +393,9 @@
       "manual": true
     },
     "100": {
-      "ah": 3,
-      "aa": 2
+      "ah": null,
+      "aa": null,
+      "manual": true
     }
   }
 }
